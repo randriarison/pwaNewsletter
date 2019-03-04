@@ -1,12 +1,12 @@
 var cacheName = 'pwa-newsletter-cache-v1',
     urlsToCache = [
-        '<?php echo $view['router']->path('homepage') ?>',
-        '<?php echo $view['assets']->getUrl('css/global.css') ?>',
-        '<?php echo $view['assets']->getUrl('js/global.js') ?>'
+        'homepage',
+        'css/global.css',
+        '{{ asset('js/global.js') }}'
     ],
     dbName = 'pwaNewsletter',
     dbCollection = 'requests',
-    nbCacheUrl = '<?php echo $view['assets']->getUrl('swNbCache.json') ?>';
+    nbCacheUrl = '{{ asset('swNbCache.json') }}';
 
 self.addEventListener('install', function(event) {
     // On install, just add our cache
@@ -225,7 +225,7 @@ function serialize(request) {
     for (var entry of request.headers.entries()) {
         headers[entry[0]] = entry[1];
     }
-    headers['<?php echo $headerSW ?>'] = true;
+    headers['{{ headerSW }}'] = true;
 
     var serialized = {
         url: request.url,

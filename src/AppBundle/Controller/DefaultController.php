@@ -85,7 +85,7 @@ class DefaultController extends Controller
         if ($isSw) {
             return new Response('ko');
         }
-        return $this->render('AppBundle::index.html.php', [
+        return $this->render('AppBundle::index.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -98,7 +98,7 @@ class DefaultController extends Controller
         $response = new Response();
         $response->headers->set('Content-Type', 'application/javascript');
 
-        return $this->render('AppBundle::sw.js.php', [
+        return $this->render('AppBundle::sw.js.twig', [
             'headerSW' => $this->getParameter('headerSW')
         ], $response);
     }

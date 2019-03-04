@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+    <head>
+        <title>PWA Newsletter</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="{{ asset('css/global.css') }}" />
+        
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicons/apple-touch-icon.png') }}>">
+        <link rel="icon" type="image/png" href={{ asset('favicons/favicon-32x32.png') }}" sizes="32x32">
+        <link rel="icon" type="image/png" href="{{ asset('favicons/favicon-16x16.png') }}" sizes="16x16">
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
+        <link rel="mask-icon" href="{{ asset('favicons/safari-pinned-tab.svg') }}" color="#96bef9">
+        <link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}">
+        <meta name="msapplication-config" content="{{ asset('favicons/browserconfig.xml') }}">
+        <meta name="theme-color" content="#ffffff">
+    </head>
+    <body>
+        <p>
+            Please enter your email address<br />
+            to receive great news from us!
+        </p>
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        {{ form_widget(form, {'attr': {'novalidate': 'novalidate'}} ) }}
+        {{ form_end(form) }}
+        <br />
+        <a href="https://github.com/nyroDev/pwaNewsletter" target="_blank">Source code</a><br />
+        <div id="log"></div>
+        <a id="nbCached" href="#"></a>
+        <script id="js"
+            data-sw="{{ path('sw') }}"
+            data-cacheurl="{{ asset('swNbCache.json') }}"
+            src="{{ asset('js/global.js') }}"></script>
+    </body>
+</html>
