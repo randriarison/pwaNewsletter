@@ -90,18 +90,6 @@ class DefaultController extends Controller
         ]);
     }
 
-    /**
-     * @Route("/sw.js", name="sw")
-     */
-    public function swAction(Request $request)
-    {
-        $response = new Response();
-        $response->headers->set('Content-Type', 'application/javascript');
-
-        return $this->render('AppBundle::sw.js.twig', [
-            'headerSW' => $this->getParameter('headerSW')
-        ], $response);
-    }
 
     /**
      * @Route("/favicons/manifest.json", name="manifest")
