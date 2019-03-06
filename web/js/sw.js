@@ -2,11 +2,11 @@ var cacheName = 'pwa-newsletter-cache-v1',
     urlsToCache = [
         'homepage',
         'css/global.css',
-        '{{ asset('js/global.js') }}'
+        'js/global.js'
     ],
     dbName = 'pwaNewsletter',
     dbCollection = 'requests',
-    nbCacheUrl = '{{ asset('swNbCache.json') }}';
+    nbCacheUrl = 'swNbCache.json';
 
 self.addEventListener('install', function(event) {
     // On install, just add our cache
@@ -225,7 +225,7 @@ function serialize(request) {
     for (var entry of request.headers.entries()) {
         headers[entry[0]] = entry[1];
     }
-    headers['{{ headerSW }}'] = true;
+    headers['X-FROM-SW'] = true;
 
     var serialized = {
         url: request.url,

@@ -2,9 +2,8 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
         var js = document.getElementById('js');
         if (js && js.dataset.sw) {
-
             // Register Service Worker with URL stored in data-sw
-            navigator.serviceWorker.register(js.dataset.sw)
+            navigator.serviceWorker.register(js.dataset.sw, { scope : '/pwaNewsletter/web/'})
                 .then(function(registration) {
                     // Registration was successful
 
