@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class DefaultController extends Controller
@@ -77,13 +78,13 @@ class DefaultController extends Controller
             $this->get('mailer')->send($message);
 
             if ($isSw) {
-                return new Response('ok');
+                return new JsonResponse(['success'=> true], 200);
             }
             return $this->redirectToRoute('homepage');
         }
 
         if ($isSw) {
-            return new Response('ko');
+            return new JsonResponse(['success'=> false, 'message'=> 'KO'], 200);
         }
         return $this->render('AppBundle::index.html.twig', [
             'form' => $form->createView(),
