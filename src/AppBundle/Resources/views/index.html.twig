@@ -19,7 +19,7 @@
             Please enter your email address<br />
             to receive great news from us!
         </p>
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id' : 'emailForm', 'action' : path('homepage'), 'method' : 'POST'}}) }}
         {{ form_widget(form, {'attr': {'novalidate': 'novalidate'}} ) }}
         {{ form_end(form) }}
         <br />
@@ -27,8 +27,8 @@
         <div id="log"></div>
         <a id="nbCached" href="#"></a>
         <script id="js"
-            data-sw="{{ asset('js/sw.js') }}"
+            data-sw="{{ asset('sw.js') }}"
             data-cacheurl="{{ asset('swNbCache.json') }}"
-            src="{{ asset('js/global.js') }}"></script>
+            src="{{ asset('global.js') }}"></script>
     </body>
 </html>

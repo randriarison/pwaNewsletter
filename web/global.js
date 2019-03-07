@@ -3,7 +3,7 @@ if ('serviceWorker' in navigator) {
         var js = document.getElementById('js');
         if (js && js.dataset.sw) {
             // Register Service Worker with URL stored in data-sw
-            navigator.serviceWorker.register(js.dataset.sw, { scope : '/pwaNewsletter/web/'})
+            navigator.serviceWorker.register('/sw.js')
                 .then(function(registration) {
                     // Registration was successful
 
@@ -141,6 +141,11 @@ if ('serviceWorker' in navigator) {
                         addLoading();
                         fetch(emailForm.getAttribute('action'), {
                             method: emailForm.getAttribute('method'),
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-FROM-SW' : true
+                            },
                             body: new FormData(emailForm)
                         }).then(function(response) {
                             return response.json();
