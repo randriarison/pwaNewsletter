@@ -265,7 +265,7 @@ self.addEventListener('fetch', function(event) {
                 let responseClone = response.clone();
 
                 caches.open('pwa-newsletter-cache-v1').then(function (cache) {
-                    cache.put(event.request, responseClone);
+                    cache.put(event.request.url, responseClone);
                 });
                 return response;
             }).catch(function () {
