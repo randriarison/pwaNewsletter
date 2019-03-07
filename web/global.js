@@ -152,6 +152,8 @@ if ('serviceWorker' in navigator) {
                         }).then(function() {
                             removeLoading();
                             form_email.value = '';
+                        }).catch(function(response){
+                            console.log(response)
                         });
                     });
 
