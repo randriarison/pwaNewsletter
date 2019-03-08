@@ -44,15 +44,21 @@ class DefaultController extends Controller
             usleep(rand(2000, 4000) * 1000);
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ( ($form->isSubmitted() && $form->isValid()) || ($request->getMethod() == 'POST' && $isSw) ){
             $em = $this->getDoctrine()->getManager();
-
+            $emailAddress = $email->getEmail();
+            if(empty($emailAddress) && $isSw){
+                $emailAddress = $request->request->get('form[email]');
+                if(!empty($emailAddress)) {
+                    $email->setEmail($emailAddress);
+                }
+            }
             $repo = $em->getRepository(Email::class);
             $existing = $repo->findOneBy([
-                'email' => $email->getEmail()
+                'email' => $emailAddress
             ]);
 
-            if (!$existing) {
+            if (!$existing && !empty($emailAddress)) {
                 $em->persist($email);
             } else {
                 $email = $existing;
@@ -71,7 +77,7 @@ class DefaultController extends Controller
 
             $message = \Swift_Message::newInstance()
                 ->setSubject('PWA Newsletter subscription')
-                ->setFrom('cedric@nyrodev.com')
+                ->setFrom('arandriarison@bocasay.com')
                 ->setTo($email->getEmail())
                 ->setBody(implode("\n", $messageCont), 'text/plain')
             ;
