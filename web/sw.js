@@ -1,6 +1,7 @@
 var cacheName = 'pwa-newsletter-cache-v1',
     urlsToCache = [
         '/',
+        '/app.php/',
         '/css/global.css',
         '/global.js'
     ],
@@ -13,7 +14,7 @@ self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(cacheName)
             .then(function(cache) {
-                console.log('installed');
+                console.log('sw installed');
                 return cache.addAll(urlsToCache);
             })
     );
@@ -21,7 +22,7 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('activate', function(event) {
     // Once SW is activated, claim all clients to be sure they are directly handled by SW to avoid page reload
-    console.log('activated')
+    console.log('sw activated')
     event.waitUntil( self.clients.claim());
 });
 
@@ -252,7 +253,7 @@ function serialize(request) {
 };
 
 self.addEventListener('fetch', function(event) {
-    event.respondWith(caches.match(event.request).then(function(response) {
+    /*event.respondWith(caches.match(event.request).then(function(response) {
         // caches.match() always resolves
         // but in case of success response will have value
         if (response !== undefined) {
@@ -272,11 +273,12 @@ self.addEventListener('fetch', function(event) {
                 return caches.match('/');
             });
         }
-    }));
-
-    /*if (event.request.method == 'POST') {
+    }));*/
+    console.log('fetch event');
+    console.log(event.request.url);
+    if (event.request.method == 'POST') {
         // This is a form sending, handle it by adding it to cache and then try to send it asynchronously
-        console.log('fetch event');
+
         event.respondWith(new Response(
             JSON.stringify({
                 caching: true
@@ -310,8 +312,9 @@ self.addEventListener('fetch', function(event) {
         }));
     } else {
         // Any other request, try cache first then network
+        console.log('simple request')
         event.respondWith(
-            caches.match(event.request)
+            caches.match(event.request.url)
                 .then(function(response) {
                     // Cache hit - return response
                     if (response) {
@@ -320,7 +323,7 @@ self.addEventListener('fetch', function(event) {
                     return fetch(event.request);
                 })
         );
-    }*/
+    }
 });
 
 self.addEventListener('sync', function(event) {
