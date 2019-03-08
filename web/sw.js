@@ -1,7 +1,7 @@
 var cacheName = 'pwa-newsletter-cache-v1',
     urlsToCache = [
         '/',
-        '/app.php/',
+        '/app_dev.php/',
         '/css/global.css',
         '/global.js'
     ],
@@ -112,6 +112,7 @@ function getNbCachedRequests() {
             var transaction = db.transaction([dbCollection]);
             var countRequest = transaction.objectStore(dbCollection).count();
             countRequest.onsuccess = function() {
+                console.log(countRequest.result);
                 resolve(countRequest.result);
             };
         });
@@ -172,6 +173,7 @@ function deserialize(serialized) {
 
 // Send cached requests, one by one
 function sendCached(isSync) {
+    console.log('sendCached(' + isSync + ')')
     return getNbCachedRequests()
         .then(function(nb) {
             if (!nb) {
@@ -225,10 +227,12 @@ function sendCached(isSync) {
 // Serialize a request, adding a X-FROM-SW header
 function serialize(request) {
     var headers = {};
+    console.log('serialize start');
     for (var entry of request.headers.entries()) {
         headers[entry[0]] = entry[1];
     }
     headers['X-FROM-SW'] = true;
+    console.log(headers);
 
     var serialized = {
         url: request.url,
@@ -321,6 +325,9 @@ self.addEventListener('fetch', function(event) {
                       return response;
                     }
                     return fetch(event.request);
+                })
+                .catch(function(){
+                    console.log('the resource at ' + event.request.url + ' is not cached');
                 })
         );
     }

@@ -3,7 +3,7 @@ if ('serviceWorker' in navigator) {
         var js = document.getElementById('js');
         if (js && js.dataset.sw) {
             // Register Service Worker with URL stored in data-sw
-            navigator.serviceWorker.register('/sw.js')
+            navigator.serviceWorker.register(js.dataset.sw)
                 .then(function(registration) {
                     // Registration was successful
 
@@ -40,6 +40,7 @@ if ('serviceWorker' in navigator) {
                             }
                             cacheChecking = true;
                             addLoading();
+                            console.log(js.dataset.cacheurl);
                             fetch(js.dataset.cacheurl+(requestSend ? '?requestSend' : ''))
                                 .then(function(response) {
                                     cacheChecking = false;
@@ -144,7 +145,6 @@ if ('serviceWorker' in navigator) {
                             headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json',
-                                'X-FROM-SW' : true
                             },
                             body: new FormData(emailForm)
                         }).then(function(response) {
