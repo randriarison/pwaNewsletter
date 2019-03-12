@@ -1,6 +1,6 @@
 var cacheName = 'pwa-newsletter-cache-v1',
     urlsToCache = [
-        '/',
+
         '/app_dev.php/',
         '/css/global.css',
         '/global.js'
@@ -16,6 +16,9 @@ self.addEventListener('install', function(event) {
             .then(function(cache) {
                 console.log('sw installed');
                 return cache.addAll(urlsToCache);
+            })
+            .catch(function (error) {
+                console.log(error)
             })
     );
 });
@@ -183,44 +186,44 @@ function sendCached(isSync) {
 
             var lastSerialized;
             return getFirstCached()
-                    .then(function(serialized) {
-                        lastSerialized = serialized;
-                        if (serialized) {
-                            return deserialize(serialized);
-                        } else {
-                            return Promise.reject(false);
-                        }
-                    }).then(function(request) {
-                        addClientLoading();
-                        return fetch(request);
-                    })
-                    .then(function(response) {
-                        if (response && response.ok) {
-                            // Clean last serialized to be sure it's not handled by next catch
-                            lastSerialized = false;
-                            sendCacheNb();
-                            removeClientLoading();
-                            return sendCached(isSync);
-                        } else {;
-                            requestSync();
-                            return Promise.reject(false);
-                        }
-                    })
-                    .catch(function() {
+                .then(function(serialized) {
+                    lastSerialized = serialized;
+                    if (serialized) {
+                        return deserialize(serialized);
+                    } else {
+                        return Promise.reject(false);
+                    }
+                }).then(function(request) {
+                    addClientLoading();
+                    return fetch(request);
+                })
+                .then(function(response) {
+                    if (response && response.ok) {
+                        // Clean last serialized to be sure it's not handled by next catch
+                        lastSerialized = false;
+                        sendCacheNb();
                         removeClientLoading();
-                        if (lastSerialized) {
-                            // Something went wrong, readd the lastSerialized request into cache
-                            addCached(lastSerialized);
-                        }
-                        if (isSync) {
-                            // In sync mode, we want to reject the promis in order to sync later
-                            sendAlert('REJECT Promise');
-                            return Promise.reject(false);
-                        } else {
-                            requestSync();
-                        }
-                        return Promise.resolve(nb);
-                    });
+                        return sendCached(isSync);
+                    } else {;
+                        requestSync();
+                        return Promise.reject(false);
+                    }
+                })
+                .catch(function() {
+                    removeClientLoading();
+                    if (lastSerialized) {
+                        // Something went wrong, readd the lastSerialized request into cache
+                        addCached(lastSerialized);
+                    }
+                    if (isSync) {
+                        // In sync mode, we want to reject the promis in order to sync later
+                        sendAlert('REJECT Promise');
+                        return Promise.reject(false);
+                    } else {
+                        requestSync();
+                    }
+                    return Promise.resolve(nb);
+                });
         });
 };
 
@@ -300,11 +303,11 @@ self.addEventListener('fetch', function(event) {
             });
     } else if (event.request.url.indexOf(nbCacheUrl) > -1) {
         // We requested the cache number, try to send it and then return the response
-        
+
         if (event.request.url.indexOf('requestSend') > -1) {
             sendCached();
         }
-        
+
         event.respondWith(getNbCachedRequests().then(function(nb) {
             return new Response(
                 JSON.stringify({
@@ -322,7 +325,7 @@ self.addEventListener('fetch', function(event) {
                 .then(function(response) {
                     // Cache hit - return response
                     if (response) {
-                      return response;
+                        return response;
                     }
                     return fetch(event.request);
                 })
@@ -338,6 +341,11 @@ self.addEventListener('sync', function(event) {
     if (event.tag == 'syncCached' || event.tag == 'test-tag-from-devtools') {
         console.log('sync requested');
         sendAlert('SYYYYNC start waiting');
-        event.waitUntil(sendCached(true));
+        event.waitUntil(
+            sendCached(true)
+                .catch(function (error) {
+                    console.log(error)
+                })
+        );
     }
 });
