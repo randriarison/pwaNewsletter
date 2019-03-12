@@ -68,7 +68,6 @@ function removeClientLoading() {
 
 // Show alert on clients
 function sendAlert(alert) {
-    console.log('send alert');
     postMessage({
         tag: 'alert',
         alert: alert
@@ -203,9 +202,21 @@ function sendCached(isSync) {
                         lastSerialized = false;
                         sendCacheNb();
                         removeClientLoading();
+                        response.json().then(function(jsonResponse){
+                            if(!jsonResponse.success){
+                                let alert = "une erreur s'est produit au niveau du serveur ";
+                                if(!jsonResponse.message){
+                                    alert += jsonResponse.message;
+                                }
+                                sendAlert(alert);
+                            }
+                        });
                         return sendCached(isSync);
-                    } else {;
-                        requestSync();
+                    } else {
+                        console.log('send cache response : ' + response.status);
+                        if(response.status !== 500) {
+                            requestSync();
+                        }
                         return Promise.reject(false);
                     }
                 })
