@@ -6,7 +6,7 @@ if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register(js.dataset.sw)
                 .then(function(registration) {
                     // Registration was successful
-
+                    console.log("SW scope:", registration.scope);
                     var nbCached = document.getElementById('nbCached'),
                         emailForm = document.getElementById('emailForm'),
                         form_email = document.getElementById('form_email'),
@@ -140,13 +140,25 @@ if ('serviceWorker' in navigator) {
                     emailForm.addEventListener('submit',  function(event) {
                         event.preventDefault();
                         addLoading();
+                        let formData = new FormData(emailForm);
+                        let jsonObject = {};
+                        for (const [key, value]  of formData.entries()) {
+                            jsonObject[key] = value;
+                        }
                         fetch(emailForm.getAttribute('action'), {
                             method: emailForm.getAttribute('method'),
                             headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json',
                             },
-                            body: new FormData(emailForm)
+
+                            body: JSON.stringify(jsonObject)
+                            // body:  formData
+                            // headers: {
+                            //     "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+                            // },
+                            //body: 'email=ipsum'
+
                         }).then(function(response) {
                             return response.json();
                         }).then(function() {
