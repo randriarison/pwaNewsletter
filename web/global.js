@@ -153,12 +153,6 @@ if ('serviceWorker' in navigator) {
                             },
 
                             body: JSON.stringify(jsonObject)
-                            // body:  formData
-                            // headers: {
-                            //     "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-                            // },
-                            //body: 'email=ipsum'
-
                         }).then(function(response) {
                             return response.json();
                         }).then(function() {
