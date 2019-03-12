@@ -35,6 +35,7 @@ class DefaultController extends Controller
                 ->add('save', SubmitType::class)
                 ->getForm();
 
+
         $form->handleRequest($request);
 
         $isSw = (bool) $request->headers->get($this->getParameter('headerSW'));
@@ -45,48 +46,52 @@ class DefaultController extends Controller
         }
 
         if ( ($form->isSubmitted() && $form->isValid()) || ($request->getMethod() == 'POST' && $isSw) ){
-            $em = $this->getDoctrine()->getManager();
-            $emailAddress = $email->getEmail();
-            if(empty($emailAddress) && $isSw){
-                $emailAddress = $request->request->get('form[email]');
-                if(!empty($emailAddress)) {
-                    $email->setEmail($emailAddress);
+            try {
+                $em = $this->getDoctrine()->getManager();
+                $emailAddress = $email->getEmail();
+                if (empty($emailAddress) && $isSw) {
+                    $data = json_decode($request->getContent(), true);
+                    $emailAddress = $data['form[email]'];
+                    if (!empty($emailAddress)) {
+                        $email->setEmail($emailAddress);
+                    }
                 }
-            }
-            $repo = $em->getRepository(Email::class);
-            $existing = $repo->findOneBy([
-                'email' => $emailAddress
-            ]);
+                $repo = $em->getRepository(Email::class);
+                $existing = $repo->findOneBy([
+                    'email' => $emailAddress
+                ]);
+                if (!$existing && !empty($emailAddress)) {
+                    $em->persist($email);
+                } else {
+                    $email = $existing;
+                }
+                $email->setInserted(new \DateTime());
+                $em->flush();
 
-            if (!$existing && !empty($emailAddress)) {
-                $em->persist($email);
-            } else {
-                $email = $existing;
-            }
-            $email->setInserted(new \DateTime());
-            $em->flush();
-            
-            // Send confirmation email with data
-            
-            $messageCont = array_filter([
-                'Thanks for subscribing to PWA Newsletter',
-                $existing ? 'You was already existing in the database.' : null,
-                'Date of received submission: '.date('Y-m-d H:i:s'),
-                $isSw ? 'From Service worker' : 'Directly from browser'
-            ]);
+                // Send confirmation email with data
 
-            $message = \Swift_Message::newInstance()
-                ->setSubject('PWA Newsletter subscription')
-                ->setFrom('arandriarison@bocasay.com')
-                ->setTo($email->getEmail())
-                ->setBody(implode("\n", $messageCont), 'text/plain')
-            ;
-            $this->get('mailer')->send($message);
+                $messageCont = array_filter([
+                    'Thanks for subscribing to PWA Newsletter',
+                    $existing ? 'You was already existing in the database.' : null,
+                    'Date of received submission: ' . date('Y-m-d H:i:s'),
+                    $isSw ? 'From Service worker' : 'Directly from browser'
+                ]);
 
-            if ($isSw) {
-                return new JsonResponse(['success'=> true], 200);
+                $message = \Swift_Message::newInstance()
+                    ->setSubject('PWA Newsletter subscription')
+                    ->setFrom('arandriarison@bocasay.com')
+                    ->setTo($email->getEmail())
+                    ->setBody(implode("\n", $messageCont), 'text/plain');
+                $this->get('mailer')->send($message);
+
+                if ($isSw) {
+                    return new JsonResponse(['success' => true], 200);
+                }
+                return $this->redirectToRoute('homepage');
             }
-            return $this->redirectToRoute('homepage');
+            catch (\Exception $e){
+                return new JsonResponse(['success' => false, 'message' => $e->getMessage()], 200);
+            }
         }
 
         if ($isSw) {
