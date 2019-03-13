@@ -2,7 +2,9 @@ var cacheName = 'pwa-newsletter-cache-v1',
     urlsToCache = [
 
         '/app_dev.php/',
+        '/app_dev.php/subscribers/',
         '/css/global.css',
+        'css/bootstrap.min.css',
         '/global.js'
     ],
     dbName = 'pwaNewsletter',

@@ -95,10 +95,22 @@ class DefaultController extends Controller
         }
 
         if ($isSw) {
-            return new JsonResponse(['success'=> false, 'message'=> 'KO'], 200);
+            return new JsonResponse(['success'=> false, 'message'=> 'please, submit the form'], 200);
         }
         return $this->render('AppBundle::index.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/subscribers/", name="subscribers")
+     */
+    public function subscribersAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $subscribers  = $em->getRepository(Email::class)-> findAll();
+        return $this->render('AppBundle::list.html.twig', [
+            'subscribers' => $subscribers
         ]);
     }
 

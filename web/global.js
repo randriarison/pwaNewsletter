@@ -137,32 +137,33 @@ if ('serviceWorker' in navigator) {
                     });
 
                     // Handle form to be an AJAX request
-                    emailForm.addEventListener('submit',  function(event) {
-                        event.preventDefault();
-                        addLoading();
-                        let formData = new FormData(emailForm);
-                        let jsonObject = {};
-                        for (const [key, value]  of formData.entries()) {
-                            jsonObject[key] = value;
-                        }
-                        fetch(emailForm.getAttribute('action'), {
-                            method: emailForm.getAttribute('method'),
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                            },
+                    if(emailForm) {
+                        emailForm.addEventListener('submit', function (event) {
+                            event.preventDefault();
+                            addLoading();
+                            let formData = new FormData(emailForm);
+                            let jsonObject = {};
+                            for (const [key, value]  of formData.entries()) {
+                                jsonObject[key] = value;
+                            }
+                            fetch(emailForm.getAttribute('action'), {
+                                method: emailForm.getAttribute('method'),
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                },
 
-                            body: JSON.stringify(jsonObject)
-                        }).then(function(response) {
-                            return response.json();
-                        }).then(function() {
-                            removeLoading();
-                            form_email.value = '';
-                        }).catch(function(response){
-                            console.log(response)
+                                body: JSON.stringify(jsonObject)
+                            }).then(function (response) {
+                                return response.json();
+                            }).then(function () {
+                                removeLoading();
+                                form_email.value = '';
+                            }).catch(function (response) {
+                                console.log(response)
+                            });
                         });
-                    });
-
+                    }
                     // Force check cache on load in case we have some cached elements
                     checkCache();
 
